@@ -24,7 +24,8 @@ if (isset ($_GET['id'])) {
 
     require_once ("tweetStructure.php");
 }
-
+?>
+<?php
 if (isset ($_POST["btn_add_comment"])) {
 
     $comment = $_POST["comment_text"];
@@ -71,7 +72,9 @@ if (isset ($_POST["btn_add_comment"])) {
 
     }
     // echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$location.'">';
-    header("location:comment.php?id=$post_id");
+    // header("location:comment.php?id=$post_id");
+    $location = "comment.php?id=$post_id";
+    echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
 }
 ?>
 
@@ -119,8 +122,8 @@ if (isset ($_POST["btn_add_comment"])) {
 
 
 <?php
-$selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
-// $selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
+// $selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
+$selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
 $selectcomment->bindParam(":post_id", $post_id);
 $selectcomment->execute();
 
@@ -175,38 +178,13 @@ while ($row = $selectcomment->fetch(PDO::FETCH_ASSOC)) {
                     <a href="javascript:void(0);"
                         onclick="updateComment('<?php echo $row['comment']; ?>', '<?php echo $row['comment_id']; ?>', '<?php echo $row['Image_upload']; ?>')"><i
                             class="fa-regular fa-pen-to-square edit"></i><span> edit</span></a>
-                    <a href="comment.php?del=<?php echo $row['comment_id']; ?>"><i
+                    <a href="deleteComment.php?del=<?php echo $row['comment_id']; ?>"><i
                             class="fa-solid fa-xmark delete"></i><span> delete</span></a>
                 </div>
 
             </div>
         </div>
     </div>
-<?php
-    if (isset ($_GET["del"])) {
-        $Del_ID = $_GET["del"];
-        $selectcomment = $conn->prepare("SELECT * FROM comments where comment_id= :comment_id");
-        $selectcomment->bindParam(":comment_id", $Del_ID);
-        $selectcomment->execute();
-        $row = $selectcomment->fetch(PDO::FETCH_ASSOC);
-        $post_id = $row['post_id'];
-        $comment_img = $row['Image_upload'];
-
-
-        $deletecomment = $conn->prepare("DELETE FROM comments WHERE comment_id = :comment_id");
-        $deletecomment->bindParam(":comment_id", $Del_ID);
-        // $selectPost->bindParam(":post_text",$post_text); 
-        $deletecomment->execute();
-        
-        //! Remove the image -------------------------------------------------->
-        unlink($comment_img);
-        //! Remove the image -------------------------------------------------->
-
-        // header("location:comment.php?id=$post_id");
-        $location = "comment.php?id=$post_id";
-        echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
-    }
-?>
 <?php
 }
 ?>
