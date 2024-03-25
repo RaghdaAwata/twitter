@@ -108,7 +108,7 @@ if (isset ($_POST["btn_add_post"])) {
 		</div>
 		<div class="tweet_display">
 			<div class="main">
-				<div class="tweet_body ">
+				<div class="tweet_body">
 					<form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
 						<input type="hidden" id='updatepost-id' name='post_id'></input>
 						<textarea name="post_text" id="updatepost-text" cols="100%" rows="3"

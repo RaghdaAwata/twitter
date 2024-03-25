@@ -119,8 +119,8 @@ if (isset ($_POST["btn_add_comment"])) {
 
 
 <?php
-// $selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
-$selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
+$selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
+// $selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
 $selectcomment->bindParam(":post_id", $post_id);
 $selectcomment->execute();
 
