@@ -16,10 +16,10 @@ require ("home.php");
         $deletePost = $conn->prepare("DELETE FROM posts WHERE post_id = :post_id");
         $deletePost->bindParam(":post_id", $Del_ID);
         $deletePost->execute();
-        //? DELETE ALL COMMENT RELATED TO THE POST */
+        //? TODO: DELETE ALL COMMENT RELATED TO THE POST */ 
 
         
-        //? DELETE ALL COMMENT RELATED TO THE POST */
+        //? TODO: DELETE ALL COMMENT RELATED TO THE POST */
         if ($deletePost) {
             header("location:function.php");
             exit;
