@@ -7,7 +7,7 @@ if (isset ($_POST["btn_update_comment"])) {
 
         if (isset ($_FILES["image-update"]) && $_FILES["image-update"]["error"] == 0) {
 
-            $target_up = "uploadImages/";
+            $target_up = "commentsImages/";
             $target_file = $target_up . basename($_FILES["image-update"]["name"]);
 
             $name = $_FILES["image-update"]["name"];

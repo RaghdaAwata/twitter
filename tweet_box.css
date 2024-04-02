@@ -164,3 +164,15 @@ select:focus{
   /* padding-bottom: 5px; */
 
 }
+
+.like, .unlike, .likes_count {
+  color: crimson;
+  align-self: center;
+}
+.hide {
+  display: none;
+}
+.fa-thumbs-up, .fa-thumbs-o-up {
+  transform: rotateY(-180deg);
+  font-size: 1.3em;
+}

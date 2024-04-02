@@ -93,9 +93,7 @@ if (isset ($_POST["btn_add_post"])) {
 				</div>
 			</div>
 			<?php
-
 			require_once "tweet.php";
-
 			?>
 
 		</div>
@@ -127,7 +125,6 @@ if (isset ($_POST["btn_add_post"])) {
 
 							</div>
 							<div id="image-update-preview"></div>
-							<!-- <i class="fa-regular fa-face-smile"></i> -->
 						</div>
 						<button class="btn btn-outline-primary" type="submit" name="btn_update_post">opslaan</button>
 					</form>
@@ -199,7 +196,7 @@ if (isset ($_POST["btn_add_post"])) {
 		const closeButton = document.getElementById('close-btn')
 
 		closeButton.addEventListener('click', () => {
-			document.getElementById("blur").classList.remove("active");
+			document.getElementById("blur").classList.remove("activeUpdate");
 			document.getElementById('popup-window').classList.remove('popup-show')
 			document.getElementById('popup-window').classList.add('popup-close')
 		})
@@ -237,9 +234,8 @@ if (isset ($_POST["btn_add_post"])) {
 
 	<script>
 		function updatePost(postText, postId, postImg) {
-			console.log(postId, postText)
 			const blur = document.getElementById("blur");
-			blur.classList.add('active');
+			blur.classList.add('activeUpdate');
 			document.getElementById("updatepost-id").value = postId;
 			document.getElementById("updatepost-text").innerText = postText;
 

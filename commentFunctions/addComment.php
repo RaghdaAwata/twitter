@@ -6,7 +6,7 @@ if (isset ($_POST["btn_add_comment"])) {
     $post_id = $_POST['post_id'];
     if (isset ($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
 
-        $target_dir = "uploadImages/";
+        $target_dir = "commentsImages/";
         $target_file = $target_dir . basename($_FILES["image"]["name"]);
 
         $name = $_FILES["image"]["name"];
@@ -17,7 +17,7 @@ if (isset ($_POST["btn_add_comment"])) {
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
 
-            $insertcomment = $conn->prepare("INSERT INTO comments (comment,Image_upload, post_id, commenttime) VALUES (:comment, :upload_image, :post_id, now())");
+            $insertcomment = $conn->prepare("INSERT INTO comments (comment, Image_upload, post_id, commenttime) VALUES (:comment, :upload_image, :post_id, now())");
             // $insertPost->bindParam(":user_id", $user_id);
             $insertcomment->bindParam(":comment", $comment);
             $insertcomment->bindParam(":upload_image", $target_file);

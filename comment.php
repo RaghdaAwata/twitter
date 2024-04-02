@@ -4,14 +4,13 @@ require_once ("home.php");
 session_start();
 $post_id = $_GET['id'];
 
-if (isset ($_GET['id'])) {
+if (isset($_GET['id'])) {
     $post_id = $_GET['id'];
 
 
     // $comment_id = $_SESSION['comment_id'];
 
-    $selectPost = $conn->prepare("SELECT posts.*, users.username FROM posts INNER JOIN users WHERE post_id = :post_id");
-
+    $selectPost = $conn->prepare("SELECT posts.* , users.username FROM posts INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = :post_id");
     $selectPost->bindParam(":post_id", $post_id);
     $selectPost->execute();
 
@@ -20,9 +19,14 @@ if (isset ($_GET['id'])) {
     $post_date = $row['post_date'];
     $post_img = $row['upload_image'];
     $user_name = $row['username'];
+    $post_id = $row['post_id'];
 
+    $selectLikes = $conn->prepare("SELECT * FROM likes WHERE post_id = :post_id");
+    $selectLikes->bindParam(":post_id", $post_id);
+    $selectLikes->execute();
+    $likes_count = $selectLikes->rowCount();
 
-    require_once ("tweetStructure.php");
+    // require_once ("tweetStructure.php");
 }
 ?>
 
@@ -31,6 +35,9 @@ if (isset ($_GET['id'])) {
     <div class="sidebar">
     </div>
     <div class="main">
+        <p>
+            <?php require_once ("tweetStructure.php"); ?>
+        </p>
         <p class="page_titel">comment</p>
         <div class="tweet_box tweet_add">
             <div class="tweet_left">
@@ -66,6 +73,74 @@ if (isset ($_GET['id'])) {
                 </form>
             </div>
         </div>
+        <?php
+        // $selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
+        $selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
+        $selectcomment->bindParam(":post_id", $post_id);
+        $selectcomment->execute();
+
+
+
+        while ($row = $selectcomment->fetch(PDO::FETCH_ASSOC)) {
+            $comment_text = $row['comment'];
+            $comment_date = $row['commenttime'];
+            $comment_img = $row['Image_upload'];
+            // $user_name = $row['username'];
+        
+            ?>
+
+        <div class="tweet_box">
+            <div class="tweet_left"><img src="RAlogo.jpeg"></div>
+
+            <div class="tweet_body">
+
+                <div class="tweet_header">
+                    <p class="tweet_name">naam
+                        <?php $user_name ?>
+                    </p>
+                    <p class="tweet_username"> @code</p>
+                    <p class="tweet_date">
+                        <?php echo $comment_date = date('H d'), strtotime($comment_date); ?>
+                    </p>
+                </div>
+
+                <p class="tweet_text">
+                    <?php echo $comment_text; ?>
+                </p>
+                <?php
+                if ($comment_img) {
+                    ?>
+                <img class="post-img" id="uploadpost-img" src='commentFunctions/<?php echo $comment_img ?>'>
+                <?php
+                }
+                ?>
+
+                <div class="tweet_icons">
+
+                    <a href=""><i class="fa-regular fa-heart"></i></a>
+                    <a href=""><i class="fa-regular fa-comment"></i></a>
+                </div>
+
+            </div><br><br>
+
+            <!-- Delete / Edit-->
+                <div class="tweet_del">
+                    <div class="dropdown">
+                        <button class="dropbtn"><span class="fa fa-ellipsis-h"></span></button>
+                        <div class="dropdown-content">
+                            <a href="javascript:void(0);"
+                                onclick="updateComment('<?php echo $row['comment']; ?>', '<?php echo $row['comment_id']; ?>', '<?php echo $row['Image_upload']; ?>')"><i
+                                    class="fa-regular fa-pen-to-square edit"></i><span> edit</span></a>
+                            <a href="./commentFunctions/deleteComment.php?del=<?php echo $row['comment_id']; ?>"><i
+                                    class="fa-solid fa-xmark delete"></i><span> delete</span></a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
     </div>
 </div>
 <!-- update textarea --------------------------------------------------------------------------------------------->
@@ -102,81 +177,6 @@ if (isset ($_GET['id'])) {
         </div>
     </div>
 </div>
-<?php
-// $selectcomment = $conn->prepare("SELECT comments.* , users.username FROM comments INNER JOIN users ON comments.commentBy = users.user_id WHERE comments.commentBy = :user_id ORDER BY comment_id DESC");
-$selectcomment = $conn->prepare("SELECT * FROM comments where post_id= :post_id");
-$selectcomment->bindParam(":post_id", $post_id);
-$selectcomment->execute();
-
-
-
-while ($row = $selectcomment->fetch(PDO::FETCH_ASSOC)) {
-    $comment_text = $row['comment'];
-    $comment_date = $row['commenttime'];
-    $comment_img = $row['Image_upload'];
-    // $user_name = $row['username'];
-
-    ?>
-
-<div class="tweet_box">
-    <div class="tweet_left"><img src="RAlogo.jpeg"></div>
-
-    <div class="tweet_body">
-        <div class="tweet_header">
-            <p class="tweet_name">naam
-                <?php $user_name ?>
-            </p>
-            <p class="tweet_username"> @code</p>
-            <p class="tweet_date">
-                <?php echo $comment_date = date('H d'), strtotime($comment_date); ?>
-            </p>
-        </div>
-
-        <p class="tweet_text">
-            <?php echo $comment_text; ?>
-        </p>
-        <?php
-        if ($comment_img) {
-            ?>
-        <img class="post-img" id="uploadpost-img" src='<?php echo $comment_img ?>'>
-        <?php
-        }
-        ?>
-
-        <div class="tweet_icons">
-
-            <a href=""><i class="fa-regular fa-heart"></i></a>
-            <a href=""><i class="fa-regular fa-comment"></i></a>
-        </div>
-
-    </div><br><br>
-
-    <!-- Delete / Edit-->
-        <div class="tweet_del">
-            <div class="dropdown">
-                <button class="dropbtn"><span class="fa fa-ellipsis-h"></span></button>
-                <div class="dropdown-content">
-                    <a href="javascript:void(0);"
-                        onclick="updateComment('<?php echo $row['comment']; ?>', '<?php echo $row['comment_id']; ?>', '<?php echo $row['Image_upload']; ?>')"><i
-                            class="fa-regular fa-pen-to-square edit"></i><span> edit</span></a>
-                    <a href="./commentFunctions/deleteComment.php?del=<?php echo $row['comment_id']; ?>"><i
-                            class="fa-solid fa-xmark delete"></i><span> delete</span></a>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <?php
-}
-?>
-
-
-
-
-
-
-
-
 
 <!-- Update Post -->
 
@@ -184,7 +184,7 @@ while ($row = $selectcomment->fetch(PDO::FETCH_ASSOC)) {
     const closeButton = document.getElementById('close-btn')
 
     closeButton.addEventListener('click', () => {
-        document.getElementById("blur").classList.remove("active");
+        document.getElementById("blur").classList.remove("activeUpdate");
         document.getElementById('popup-window').classList.remove('popup-show')
         document.getElementById('popup-window').classList.add('popup-close')
     })
@@ -227,13 +227,13 @@ while ($row = $selectcomment->fetch(PDO::FETCH_ASSOC)) {
     function updateComment(comment, commentId, commentImg) {
         // console.log(postId, postText)
         const blur = document.getElementById("blur");
-        blur.classList.add('active');
+        blur.classList.add('activeUpdate');
         document.getElementById("updatecomment-id").value = commentId;
         document.getElementById("updatecomment-text").innerText = comment;
 
         let img = document.createElement('img');
         img.classList.add('s-img')
-        img.src = commentImg;
+        img.src = "commentFunctions/" + commentImg;
         document.getElementById('image-update-preview').innerHTML = ''; // Clear previous preview
         document.getElementById('image-update-preview').appendChild(img);
 

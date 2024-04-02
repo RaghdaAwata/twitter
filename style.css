@@ -57,7 +57,7 @@ grid-template-areas:
 .main{ grid-area:main;}
 .right_sidebar{ grid-area:right_sidebar;}
 
-.active{
+.activeUpdate{
     filter:blur(2px);
 }
 .page_titel{
@@ -119,14 +119,13 @@ grid-template-areas:
     margin: 0;
 }
 
-.sidebar {
+/* .sidebar {
     background-color: #333;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    /* width: 100%; */
-}
+} */
 
 #image-preview {
     width: 20px; 

@@ -3,9 +3,11 @@ $_GET['post_content'] = $post_text;
 $_GET['post_date'] = $post_date;
 $_GET['upload_image'] = $post_img;
 $_GET['username'] = $user_name;
-
-
+$_GET['post_id'] = $post_id;
+$_GET['likesCount'] = $likes_count;
 ?>
+
+
 <div class="tweet_box">
     <div class="tweet_left"><img src="RAlogo.jpeg"></div>
 
@@ -29,76 +31,104 @@ $_GET['username'] = $user_name;
             <img class="post-img" id="uploadpost-img" src='<?php echo $post_img ?>'>
             <?php
         }
+
         ?>
 
-        <!-- <div class="tweet_icons">
 
-            <a href="" class="like-btn"><i class="fa-regular fa-heart"></i></a>
-            <span class="like-count">0</span>
-            <a href="comment.php?id=<?php echo $row['post_id']; ?>"><i class="fa-regular fa-comment"></i></a>
-        </div> -->
 
         <div class="tweet_icons">
-            <form class="like-form" method="post" action="">
-            <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
-            <button type="submit" class="like-btn" name="like_btn"><i class="fa-regular fa-heart"></i></button>
-                <span class="like-count">0</span>
-                <a href="comment.php?id=<?php echo $row['post_id']; ?>"><i class="fa-regular fa-comment"></i></a>
-            </form>
+            <?php
+            $selectLike = $conn->prepare(query: "SELECT * FROM likes WHERE user_id =:user_id AND post_id= :post_id");
+            $selectLike->bindParam(":post_id", $post_id);
+            $selectLike->bindParam(":user_id", $user_id);
+            $selectLike->execute();
+
+
+            // echo $selectLike->rowCount();
+            if ($selectLike->rowCount() == 1):
+                $row = $selectLike->fetch(PDO::FETCH_ASSOC); {
+                    $like_id = $row['like_id'];
+                }
+                ?>
+                <span class="unlike fa-solid fa-heart" data-id="<?php echo $like_id; ?>"></span>
+                <span class="like fa-regular fa-heart hide" id="<?php echo $post_id; ?>" data-id="<?php echo $post_id; ?>"
+                    data-user="<?php echo $user_id; ?>"></span>
+            <?php else: ?>
+                <!-- user has not yet liked post -->
+                <span class="unlike fa-solid fa-heart hide" data-id="<?php echo $like_id; ?>"></span>
+                <span class="like fa-regular fa-heart" id="<?php echo $post_id; ?>" data-id="<?php echo $post_id; ?>"
+                    data-user="<?php echo $user_id; ?>"></span>
+            <?php endif ?>
+            <span class="like-count">
+                <?php echo $likes_count; ?>
+            </span>
+
+            <a href="comment.php?id=<?php echo $row['post_id']; ?>"><i class="fa-regular fa-comment"></i></a>
         </div>
 
-    </div><br><br>
 
+    </div><br><br>
     <!-- Delete / Edit-->
     <div class="tweet_del">
         <div class="dropdown">
             <button class="dropbtn"><span class="fa fa-ellipsis-h"></span></button>
             <div class="dropdown-content">
                 <a href="javascript:void(0);"
-                    onclick="updatePost('<?php echo $row['post_content']; ?>', '<?php echo $row['post_id']; ?>', '<?php echo $row['upload_image']; ?>')"><i
+                    onclick="updatePost('<?php echo $post_text; ?>', '<?php echo $post_id; ?>', '<?php echo $post_img; ?>')"><i
                         class="fa-regular fa-pen-to-square edit"></i><span> edit</span></a>
                 <a href="deleteTweet.php?del=<?php echo $row['post_id']; ?>"><i
-                        class="fa-solid fa-xmark delete"></i><span> delete</span></a>
+                        class="fa-solid fa-xmark delete"></i><span>
+                        delete</span></a>
             </div>
 
         </div>
     </div>
 </div>
-<?php
-if (isset ($_POST['like_btn'])) {
-    // Retrieve the comment ID from the form
-    $post_id = $_POST['post_id'];
-    // Perform your SQL update to increment the like count for the specified comment ID
-    // For demonstration purposes, let's assume you have a 'comments' table with a 'likes' column
-    $sql = "UPDATE posts SET likesCount = likesCount + 1 WHERE post_id = :post_id";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':post_id', $post_id);
-    $stmt->execute();
 
-    // Redirect back to the page where the comment is displayed after updating the like count
-    header("Location: " . $_SERVER['HTTP_REFERER']);
-    exit();
-}
-?>
+<!-- <script src="jquery.min.js"></script> -->
 <script>
-    // JavaScript code to handle liking comments
-    document.addEventListener("DOMContentLoaded", function () {
-        // Event listener for like button click
-        var likeForms = document.querySelectorAll(".like-form");
-        likeForms.forEach(function (form) {
-            form.addEventListener("submit", function (event) {
-                event.preventDefault(); // Prevent the default form submission
+    $(document).ready(function (e) {
+        // when the user clicks on like
+        $('.like').unbind().click(function () {
+            let post_id = $(this).data('id');
+            let user_id = $(this).data('user');
+            console.log(user_id);
+            $post = $(this);
+            console.log(post_id);
+            $.ajax({
+                url: 'updateLike.php',
+                type: 'post',
+                data: {
+                    'liked': 1,
+                    'post_id': post_id,
+                    'user_id': user_id
+                },
+                success: function (response) {
+                    $post.parent().find('span.likes_count').text(response + " likes");
+                    $post.addClass('hide');
+                    $post.siblings().removeClass('hide');
+                }
+            });
+        });
 
-                // Get the comment ID and like count elements
-                var commentId = form.querySelector("[name='post_id']").value;
-                var likeCountElement = form.querySelector(".like-count");
 
-                // Simulate liking action (increment like count)
-                var currentLikes = parseInt(likeCountElement.textContent);
-                likeCountElement.textContent = currentLikes + 1;
-
-                // Submit the form to the server
-                form.submit();
+        // when the user clicks on unlike
+        $('.unlike').unbind().click(function () {
+            let like_id = $(this).data('id');
+            $post = $(this);
+            console.log(like_id);
+            $.ajax({
+                url: 'updateLike.php',
+                type: 'post',
+                data: {
+                    'unliked': 1,
+                    'like_id': like_id
+                },
+                success: function (response) {
+                    $post.parent().find('span.likes_count').text(response + " likes");
+                    $post.addClass('hide');
+                    $post.siblings().removeClass('hide');
+                }
             });
         });
     });
