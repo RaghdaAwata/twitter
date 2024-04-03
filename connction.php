@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$con = mysqli_connect("localhost","root","","users");
+$con = mysqli_connect("localhost","root","","twitter");
 try {
     echo "Connected successfully <br>";
   } catch(PDOException $e) {

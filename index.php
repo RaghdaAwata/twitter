@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert_user->bindParam(":wachtwoord", $encrypt_password);
 
     if ($insert_user->execute()) {
-        header("Location: Login.php");
+        header("Location: login.php");
         exit;
     }
 }

@@ -15,7 +15,7 @@ $selectPost->execute();
 while ($row = $selectPost->fetch(PDO::FETCH_ASSOC)) {
     $post_text = $row['post_content'];
     $post_date = $row['post_date'];
-    $post_img = $row['upload_image'];
+    $post_img = $row['Upload_image'];
     $user_name = $row['username'];
     $post_id = $row['post_id'];
     
@@ -23,6 +23,13 @@ while ($row = $selectPost->fetch(PDO::FETCH_ASSOC)) {
     $selectLikes->bindParam(":post_id", $post_id);
     $selectLikes->execute();
     $likes_count = $selectLikes->rowCount();
+    // ............................
+
+    $selectComment = $conn->prepare("SELECT * FROM comments WHERE post_id = :post_id");
+    $selectComment->bindParam(":post_id", $post_id);
+    $selectComment->execute();
+    $comments_count = $selectComment->rowCount();
+    // ............................
     
     require ("tweetStructure.php");
 

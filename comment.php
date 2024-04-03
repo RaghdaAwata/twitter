@@ -17,7 +17,7 @@ if (isset($_GET['id'])) {
     $row = $selectPost->fetch(PDO::FETCH_ASSOC);
     $post_text = $row['post_content'];
     $post_date = $row['post_date'];
-    $post_img = $row['upload_image'];
+    $post_img = $row['Upload_image'];
     $user_name = $row['username'];
     $post_id = $row['post_id'];
 
@@ -27,6 +27,12 @@ if (isset($_GET['id'])) {
     $likes_count = $selectLikes->rowCount();
 
     // require_once ("tweetStructure.php");
+
+
+    $selectComment = $conn->prepare("SELECT * FROM comments WHERE post_id = :post_id");
+    $selectComment->bindParam(":post_id", $post_id);
+    $selectComment->execute();
+    $comments_count = $selectComment->rowCount();
 }
 ?>
 
@@ -36,7 +42,7 @@ if (isset($_GET['id'])) {
     </div>
     <div class="main">
         <p>
-            <?php require_once ("tweetStructure.php"); ?>
+            <?php require ("tweetStructure.php"); ?>
         </p>
         <p class="page_titel">comment</p>
         <div class="tweet_box tweet_add">
@@ -60,12 +66,12 @@ if (isset($_GET['id'])) {
                                 <label for="img-add-input" class="inputimg"><i
                                         class="fa-regular fa-image icon"></i></label>
                                 <input type="file" class="img-input" name="image" value="image" id="img-add-input"
-                                    accept="image/*">
+                                    accept="image/*" />
 
                             </div>
                             <div id="image-add-preview"></div>
                         </div>
-                        <input hidden class="img-input" name="post_id" value="<?php echo $post_id ?>">
+                        <input hidden class="img-input" name="post_id" value="<?php echo $post_id ?>" />
                         <button class="btn btn-outline-primary" type="submit" name="btn_add_comment"><i
                                 class="fa-solid fa-paper-plane"></i></button>
 
@@ -118,10 +124,10 @@ if (isset($_GET['id'])) {
                 <div class="tweet_icons">
 
                     <a href=""><i class="fa-regular fa-heart"></i></a>
-                    <a href=""><i class="fa-regular fa-comment"></i></a>
+                    <!-- <a href=""><i class="fa-regular fa-comment"></i></a> -->
                 </div>
 
-            </div><br><br>
+            </div>
 
             <!-- Delete / Edit-->
                 <div class="tweet_del">
@@ -172,8 +178,8 @@ if (isset($_GET['id'])) {
                         <!-- <i class="fa-regular fa-face-smile"></i> -->
                     </div>
                     <button class="btn btn-outline-primary" type="submit" name="btn_update_comment">opslaan</button>
+                </form>
             </div>
-            </form>
         </div>
     </div>
 </div>

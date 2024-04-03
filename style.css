@@ -45,8 +45,8 @@ width: 100%;
 /* max-width: 1350px; */
 margin: 0 auto;
 display: grid;
-grid-template-columns: 1fr 2fr;
-grid-template-rows: 0.8fr 1.5fr 1fr;
+grid-template-columns: 0.8fr 1.5fr 0.4fr;
+grid-template-rows: 0.8fr 1.5fr 0.4fr;
 gap: 0px 0px;
 grid-template-areas: 
 "sidebar main right_sidebar ."
